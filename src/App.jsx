@@ -3,118 +3,103 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { supabase } from './supabaseClient'
+
+function Login() {
+  return (
+  <div className='min-h-screen bg-green-50 flex items-center justify-center'>
+    <div className="bg-white rounded-2xl shadow-sm p-8 w-full max-w-sm">
+      
+
+      <h1 className='text-center text-2xl font-bold tracking-tight text-green-900' >Welcome back!</h1>
+      <p className='text-center text-sm text-slate-400 my-1.5'>Sign in to your household</p>
+
+      <form>
+        <label htmlFor='email'>Email</label>
+        <input className='w-full border border-gray-300 rounded-xl p-1.5 mt-0.5 mb-1'
+        type='text'
+        id="email"
+        name='email'
+        placeholder='You@email.com'
+        required
+        />
+
+        <label htmlFor='password'>Password</label>
+        <input className='w-full border border-gray-300 rounded-xl p-1.5 mt-0.5'
+        type='password'
+        id="password"
+        name='password'
+        placeholder='Enter password here'
+        required
+        />
+
+        <button className='w-full my-2 p-2.5 justify-center rounded-md bg-green-600 text-white hover:bg-green-500 focus-visible:outline-2' type="submit">Submit</button>
+      </form>
+      <p>Don't have an account? <Link to="/register" className='text-blue-500 hover:text-blue-400'>Register here</Link></p>
+    </div>
+  </div>
+  )
+}
+
+function Register(){
+  return (
+  <div className='min-h-screen bg-green-50 flex items-center justify-center'>
+    <div className="bg-white rounded-2xl shadow-sm p-8 w-full max-w-sm">
+      
+
+      <h1 className='text-center text-2xl font-bold tracking-tight text-green-900' >Welcome!</h1>
+      <p className='text-center text-sm text-slate-400 my-1.5'>Register an account to join your household</p>
+
+      <form>
+        <label htmlFor='email'>Email</label>
+        <input className='w-full border border-gray-300 rounded-xl p-1.5 mt-0.5'
+        type='text'
+        id="email"
+        name='email'
+        placeholder='You@email.com'
+        required
+        />
+
+        <label htmlFor='password'>Password</label>
+        <input className='w-full border border-gray-300 rounded-xl p-1.5 mt-1.5'
+        type='password'
+        id="password"
+        name='password'
+        placeholder='Enter password here'
+        required
+        />
+
+        <label htmlFor='password'>Confirm Password</label>
+        <input className='w-full border border-gray-300 rounded-xl p-1.5 mt-1.5'
+        type='password'
+        id="password-confirm"
+        name='password-confirm'
+        placeholder='Enter password again'
+        required
+        />
+
+        <button className='w-full my-2 p-2.5 justify-center rounded-md bg-green-600 text-white hover:bg-green-500 focus-visible:outline-2' type="submit">Submit</button>
+      </form>
+      <p>Already have an account? <Link to="/" className='text-blue-500 hover:text-blue-400'>Login here</Link></p>
+    </div>
+  </div>
+  )
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <BrowserRouter>
 
-      <div className="ticks"></div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <Routes>
+        <Route path="/" element={<Login />}> </Route>
+        <Route path="/register" element={<Register />}> </Route>
+      </Routes>
+    </BrowserRouter>
+    
   )
 }
 
