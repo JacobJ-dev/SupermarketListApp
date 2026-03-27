@@ -1,17 +1,39 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient';
 import { useState, useEffect } from 'react';
 
 function HouseholdSetupPage() {
 
-    useEffect(() => {
+    const navigate = useNavigate();
+    
 
+    useEffect(() => {
+        (async () => {
+            try{
+                //Get the current user
+                const { data: { user } } = await supabase.auth.getUser()
+
+                //Check if they already have a household
+                const { data } = await supabase
+                    .from('household_member')
+                    .select()
+                    .eq('user_id', user.id)
+
+                if(data && data.length > 0){
+                    navigate("/home");
+                }
+            } catch (error){
+                console.error("Error fetching data:", error);
+            }
+        } )();
+        
     }, [])
 
+    
     const [showCreate, setShowCreate] = useState(false);
     const [showJoin, setShowJoin] = useState(false);
     const [houseName, setHouseName] = useState('');
-    const [joinCode, setJoinCode] = useState('');
+    const [joinCode, setJoinCode] = useState(''); //For existing households
 
     const showCreateField = () => {
         setShowCreate(true);
@@ -24,6 +46,78 @@ function HouseholdSetupPage() {
     const returnBack = () => {
         setShowCreate(false);
         setShowJoin(false);
+    }
+
+    const handleCreate = async(event) => {
+        event.preventDefault();
+
+        var code = await getUniqueCode();
+        
+        try {
+            const {data} = await supabase
+                .from('household')
+                .insert({name: houseName, join_code: code})
+                .select();
+
+            
+            console.log('household data:', data)
+            console.log('calling addCurrentUserToHouseHold with:', data[0].id, 'head')
+
+            addCurrentUserToHouseHold(data[0].id, 'head');
+        } catch (error) {
+            console.error('Error inserting data:', error);
+        }
+       
+    }
+
+    const addCurrentUserToHouseHold = async(householdId, role) => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+
+            const {data} = await supabase
+                .from('household_member')
+                .insert({role: role,household_id:householdId,user_id:user.id})
+                .select();
+
+            console.log('Data inserted successfully:', data);
+
+            navigate("/home");
+        } catch (error) {
+            
+        }
+    }
+
+    const getUniqueCode = async() => {
+        while(true){
+            var houseCode = generateCode();
+            try{
+                const {data} = await supabase
+                    .from('household')
+                    .select()
+                    .eq('join_code', houseCode);
+
+                //If the data returns and there is no rows returned
+                if(data && data.length === 0){
+                    //return this valid household join code
+                    return houseCode;
+                }
+
+            } catch (error){
+                console.error("Error fetching data:", error);
+            }
+        }
+    }
+
+    function generateCode(){
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let houseCode = "";
+
+        for(let i=0; i < 6; i++){
+            //Retrieve a random character and add it to the household code
+            houseCode += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        return houseCode;
     }
 
     
@@ -40,7 +134,7 @@ function HouseholdSetupPage() {
                 }
                 
                 { showCreate &&
-                    <form>
+                    <form onSubmit={handleCreate}>
                         <label htmlFor='house-name'>Enter house name</label>
                         <input className='w-full border border-gray-300 rounded-xl p-1.5 mt-0.5'
                         type='text'
