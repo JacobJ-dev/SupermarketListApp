@@ -36,7 +36,7 @@ function LoginPage() {
 
         if (data.session) {
             console.log('User session:', data.session);
-            navigate("/home");
+            navigate("/setup");
         }
 
 

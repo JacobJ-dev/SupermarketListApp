@@ -51,7 +51,7 @@ function RegisterPage(){
 
         if (data.session) {
             console.log('User session:', data.session);
-            navigate("/home");
+            navigate("/setup");
         } else {
             console.log('Check your email for the confirmation link!');
         }
