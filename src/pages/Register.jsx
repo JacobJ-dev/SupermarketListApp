@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient';
 
 
 
@@ -9,6 +11,7 @@ function RegisterPage(){
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordError, setPasswordError] = useState(false);
+    const navigate = useNavigate();
 
     const HandlePasswordChange = (event) => {
         setPassword(event.target.value);
@@ -31,6 +34,30 @@ function RegisterPage(){
         setEmail(event.target.value);
         console.log(event.target.value);
     };
+
+    const HandleSubmit = async (event) => {
+        event.preventDefault();
+
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password
+        });
+
+        if(error){
+            console.error('Sign-up error: ', error.message);
+            return;
+        }
+        console.log("user signed up: ", data.user);
+
+        if (data.session) {
+            console.log('User session:', data.session);
+            navigate("/home");
+        } else {
+            console.log('Check your email for the confirmation link!');
+        }
+
+        
+    }
     
 
     return (
@@ -41,7 +68,7 @@ function RegisterPage(){
             <h1 className='text-center text-2xl font-bold tracking-tight text-green-900' >Welcome!</h1>
             <p className='text-center text-sm text-slate-400 my-1.5'>Register an account to join your household</p>
 
-            <form>
+            <form onSubmit={HandleSubmit}>
                 <label htmlFor='email'>Email</label>
                 <input className='w-full border border-gray-300 rounded-xl p-1.5 mt-0.5'
                 type='text'

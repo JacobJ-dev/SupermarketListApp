@@ -1,9 +1,13 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { supabase } from '../supabaseClient';
+import { useState } from 'react';
+import { use } from 'react';
 
 function LoginPage() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const HandleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -15,6 +19,29 @@ function LoginPage() {
 
     };
 
+    const HandleSubmit = async (event) => {
+        event.preventDefault();
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        })
+
+        if(error){
+            console.error('Sign-in error: ', error.message);
+            return;
+        }
+
+        console.log("user signed in: ", data.user);
+
+        if (data.session) {
+            console.log('User session:', data.session);
+            navigate("/home");
+        }
+
+
+    } 
+
     return (
     <div className='min-h-screen bg-green-50 flex items-center justify-center'>
         <div className="bg-white rounded-2xl shadow-sm p-8 w-full max-w-sm">
@@ -23,7 +50,7 @@ function LoginPage() {
         <h1 className='text-center text-2xl font-bold tracking-tight text-green-900' >Welcome back!</h1>
         <p className='text-center text-sm text-slate-400 my-1.5'>Sign in to your household</p>
 
-        <form>
+        <form onSubmit={HandleSubmit}>
             <label htmlFor='email'>Email</label>
             <input className='w-full border border-gray-300 rounded-xl p-1.5 mt-0.5 mb-1'
             type='text'
