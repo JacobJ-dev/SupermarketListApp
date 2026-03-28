@@ -34,6 +34,7 @@ function HouseholdSetupPage() {
     const [showJoin, setShowJoin] = useState(false);
     const [houseName, setHouseName] = useState('');
     const [joinCode, setJoinCode] = useState(''); //For existing households
+    const [showJoinError, setShowJoinError] = useState(false);
 
     const showCreateField = () => {
         setShowCreate(true);
@@ -48,6 +49,45 @@ function HouseholdSetupPage() {
         setShowJoin(false);
     }
 
+    const handleJoin = async(event) => {
+        event.preventDefault();
+
+        //Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+
+        //Check if a household exists with the entered code
+        try {
+            const{data} = await supabase
+                .from('household')
+                .select()
+                .eq('join_code', joinCode);
+
+            //If no household found
+            if(data && data.length === 0){
+                setShowJoinError(true);
+                return;
+            }
+
+            var house_id = data[0].id;
+
+            //Select all members that match current household and current user
+            const {data:member} = await supabase
+                .from('household_member')
+                .select()
+                .eq('household_id',house_id)
+                .eq('user_id',user.id);
+            
+            //If user is not a member of the household
+            if(member && member.length === 0){
+                await addCurrentUserToHouseHold(house_id, 'member');
+            }
+
+            navigate("/home");
+        } catch (error){
+
+        }
+    }
+
     const handleCreate = async(event) => {
         event.preventDefault();
 
@@ -60,8 +100,7 @@ function HouseholdSetupPage() {
                 .select();
 
             
-            console.log('household data:', data)
-            console.log('calling addCurrentUserToHouseHold with:', data[0].id, 'head')
+           
 
             addCurrentUserToHouseHold(data[0].id, 'head');
         } catch (error) {
@@ -72,7 +111,7 @@ function HouseholdSetupPage() {
 
     const addCurrentUserToHouseHold = async(householdId, role) => {
         try {
-            const { data: { user } } = await supabase.auth.getUser()
+            const { data: { user } } = await supabase.auth.getUser();
 
             const {data} = await supabase
                 .from('household_member')
@@ -150,7 +189,7 @@ function HouseholdSetupPage() {
                     </form>
                 }
                 {   showJoin &&                
-                    <form>
+                    <form onSubmit={handleJoin}>
                         <label htmlFor='join-code'>Enter join code</label>
                         <input className='w-full border border-gray-300 rounded-xl p-1.5 mt-0.5'
                         type='text'
@@ -163,6 +202,11 @@ function HouseholdSetupPage() {
                         }}
                         required
                         />
+
+                        <div className=''>
+                            {showJoinError && <p id='error-text' className='text-red-500 text-sm'>No existing household with that code</p>}
+                        </div>
+
                         <button className='w-full my-2 p-2.5 justify-center rounded-md bg-green-600 text-white hover:bg-green-500 focus-visible:outline-2' type="submit">Submit</button>
                     </form>
                     
