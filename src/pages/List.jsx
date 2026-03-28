@@ -1,24 +1,64 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient';
-import { useState } from 'react';
-import { ItemCard } from './components/ItemCard'
+import { useState, useEffect } from 'react';
+import  ItemCard  from './components/ItemCard'
+import { use } from 'react';
 
 function ListPage() {
 
     const [itemName, setItemName] = useState();
-    const [items, setItems] = useState<ItemCard>([]);
+    const [items, setItems] = useState([]);
+
+    const [householdID, setHouseholdID] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [memberID, setMemberID] = useState(null);
+
+    useEffect(() => {
+        loadItems();
+    }, []);
 
     const updateItem = (event) => {
         setItemName(event.target.value);
     }
 
-    const handleItemEntry = () => {
+    const handleItemEntry = async(event) => {
+        event.preventDefault();
+        if (itemName.trim() !== ''){
+            try {
+                const {data} = await supabase
+                    .from('item')
+                    .insert({name:itemName, household_id:householdID, added_by:memberID, quantity:"1" });
 
+                console.log('Data inserted successfully:', data);
+                await loadItems();
+            } catch (error) {
+                console.log("Error while inserting: ", error);
+            }
+        }
     }
 
-    const loadItems = () => {
+    const loadItems = async() => {
         try {
+            //Get the current user
+            const { data: { user } } = await supabase.auth.getUser();
+            setCurrentUser(user);
+            //Select the household where the user matches the member
+            const {data:house} = await supabase
+                .from('household_member')
+                .select('household_id, id')
+                .eq('user_id',user.id);
             
+            setHouseholdID(house[0].household_id);
+            setMemberID(house[0].id);
+            //Select all items where household_id matches
+            const {data: itemData} = await supabase
+                .from('item')
+                .select()
+                .eq('household_id',house[0].household_id);
+            //Add these into our item
+            setItems(itemData);
+        } catch (error){
+            console.error('Data failed: ', error);
         }
     }
 
@@ -58,9 +98,9 @@ function ListPage() {
 
                     <div id='item-holder' className='p-6 flex flex-col gap-3'>
                         <ul>
-                            {items.map((itemCard) => (
-                                <li key={itemCard.id}>
-                                    
+                            {items?.map((groceryItem) => (
+                                <li key={groceryItem.id}>
+                                    {<ItemCard productName={groceryItem.name} quantity={groceryItem.quantity} addedBy={groceryItem.added_by}></ItemCard>}
                                 </li>
                             ))}
                         </ul>

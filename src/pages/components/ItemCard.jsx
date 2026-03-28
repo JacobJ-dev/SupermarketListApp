@@ -8,6 +8,7 @@ function ItemCard({productName, addedBy, quantity}){
     
 
     useEffect(() => {
+        addedBy = "Jacob" //For testing purposes
         const letters = [...addedBy];
         setIntial(letters[0]);
     }, []);
@@ -20,7 +21,7 @@ function ItemCard({productName, addedBy, quantity}){
                 </div>
                 <div className='flex-col'>
                     <h3>{productName}</h3>
-                    <p>Added by: {addedBy} <span id='quantity'>{quantity}</span></p>
+                    <p>Added by: {"Jacob"} : <span id='quantity'>{quantity}</span></p>
                 </div>
             </div>
             <div className='bg-green-100 px-5 rounded-2xl flex items-center justify-center'>
