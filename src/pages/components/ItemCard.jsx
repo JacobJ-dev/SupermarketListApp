@@ -1,10 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '../supabaseClient';
+
 import { useState, useEffect } from 'react';
 
 function ItemCard({productName, addedBy, quantity}){
 
     const [intial, setIntial] = useState('');
+    
 
     useEffect(() => {
         const letters = [...addedBy];
@@ -28,3 +29,5 @@ function ItemCard({productName, addedBy, quantity}){
         </div>
     )
 }
+
+export default ItemCard;
