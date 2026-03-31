@@ -12,6 +12,7 @@ function ListPage() {
     const [householdID, setHouseholdID] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [memberID, setMemberID] = useState(null);
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
         loadItems();
@@ -45,11 +46,12 @@ function ListPage() {
             //Select the household where the user matches the member
             const {data:house} = await supabase
                 .from('household_member')
-                .select('household_id, id')
+                .select('household_id, id, role')
                 .eq('user_id',user.id);
             
             setHouseholdID(house[0].household_id);
             setMemberID(house[0].id);
+            setUserRole(house[0].role);
             //Select all items where household_id matches
             const {data: itemData} = await supabase
                 .from('item')
@@ -97,10 +99,10 @@ function ListPage() {
                     <h3>THIS WEEK</h3>
 
                     <div id='item-holder' className='p-6 flex flex-col gap-3'>
-                        <ul>
+                        <ul className='flex flex-col gap-3'>
                             {items?.map((groceryItem) => (
                                 <li key={groceryItem.id}>
-                                    {<ItemCard productName={groceryItem.name} quantity={groceryItem.quantity} addedBy={groceryItem.added_by}></ItemCard>}
+                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} addedBy={groceryItem.added_by} userRole={userRole}></ItemCard>}
                                 </li>
                             ))}
                         </ul>
