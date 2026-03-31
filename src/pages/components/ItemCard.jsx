@@ -37,6 +37,7 @@ function ItemCard({productName, productID, addedBy, quantity, userRole}){
                 <input type="checkbox" name="isDone" className='w-9 h-9 accent-green-600 cursor-pointer'></input>
                 <button type="button" onClick={alert('button clicked')} className='w-9 h-9'>
                     <img src='../src/assets/bin.svg' className='w-9 h-9'></img>
+                    {/* dummy comment */}
                 </button>
             </div>}
         </div>
