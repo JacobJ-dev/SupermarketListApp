@@ -48,6 +48,7 @@ function ListPage() {
                 .from('household_member')
                 .select('household_id, id, role')
                 .eq('user_id',user.id);
+
             
             setHouseholdID(house[0].household_id);
             setMemberID(house[0].id);
@@ -56,7 +57,8 @@ function ListPage() {
             const {data: itemData} = await supabase
                 .from('item')
                 .select()
-                .eq('household_id',house[0].household_id);
+                .eq('household_id',house[0].household_id)
+                .order('created_at', {ascending:true});
             //Add these into our item
             setItems(itemData);
         } catch (error){
@@ -89,7 +91,7 @@ function ListPage() {
                             onChange={updateItem}
                             required
                             />
-                            <button className='bg-green-600 text-white px-4 rounded-xl hover:bg-green-500 focus-visible:outline-2'>+</button>
+                            <button className='bg-green-600 text-white px-4 rounded-xl font-extrabold hover:bg-green-500 focus-visible:outline-2'>+</button>
                         </form>
                     </div>
 
@@ -102,7 +104,7 @@ function ListPage() {
                         <ul className='flex flex-col gap-3'>
                             {items?.map((groceryItem) => (
                                 <li key={groceryItem.id}>
-                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} addedBy={groceryItem.added_by} userRole={userRole}></ItemCard>}
+                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} addedBy={groceryItem.added_by} userRole={userRole} isDone={groceryItem.is_done} onDelete={loadItems}></ItemCard>}
                                 </li>
                             ))}
                         </ul>
