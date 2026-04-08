@@ -13,6 +13,12 @@ function HouseholdSetupPage() {
                 //Get the current user
                 const { data: { user } } = await supabase.auth.getUser()
 
+                //if no user logged in
+                if(user === null){
+                    navigate("/")
+                    return
+                }
+
                 //Check if they already have a household
                 const { data } = await supabase
                     .from('household_member')

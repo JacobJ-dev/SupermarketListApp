@@ -36,11 +36,27 @@ function LoginPage() {
 
         if (data.session) {
             console.log('User session:', data.session);
-            navigate("/setup");
+
+            
+            SetRedirect(data.user);
         }
 
 
     } 
+
+    const SetRedirect = async (user) => {
+        //Check if they already have a household
+        const { data } = await supabase
+            .from('household_member')
+            .select()
+            .eq('user_id', user.id)
+
+        if(data && data.length > 0){
+            navigate("/home");
+        } else {
+            navigate("/setup");
+        }
+    }
 
     return (
     <div className='min-h-screen bg-green-50 flex items-center justify-center'>

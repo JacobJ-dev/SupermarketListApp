@@ -21,6 +21,7 @@ function ListPage() {
             const { data: { user } } = await supabase.auth.getUser();
             if(user === null){
                 navigate("/");
+                return;
             }
             await loadItems();
         })();
