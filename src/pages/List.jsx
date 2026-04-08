@@ -6,6 +6,8 @@ import { use } from 'react';
 
 function ListPage() {
 
+    const navigate = useNavigate();
+
     const [itemName, setItemName] = useState();
     const [items, setItems] = useState([]);
 
@@ -15,7 +17,13 @@ function ListPage() {
     const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
-        loadItems();
+        (async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if(user === null){
+                navigate("/");
+            }
+            await loadItems();
+        })();
     }, []);
 
     const updateItem = (event) => {
