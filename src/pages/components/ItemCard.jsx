@@ -1,40 +1,6 @@
-import { Link, useNavigate } from 'react-router-dom'
-
-import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 
-function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, onDelete}){
-
-    const [intial, setIntial] = useState('');
-    const [createdBy, setCreatedBy] = useState('');
-
-    
-
-    useEffect(() => {
-        (async() => {
-            var createdBy = await retrieveMember();
-
-            const letters = [...createdBy.name];
-            setIntial(letters[0]);
-            setCreatedBy(createdBy);
-        })();
-    }, []);
-
-    const retrieveMember = async() => {
-        try {
-            const {data:member} = await supabase
-                .from('household_member')
-                .select()
-                .eq('id', addedBy);
-
-            console.log("Retrieved member, ", member[0]);
-            if(member && member.length > 0){
-                return member[0];
-            }
-        } catch (error) {
-            console.error("Error retrieving member for item: ", error);
-        }
-    }
+function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, onDelete, onChecked}){
 
     const handleDelete = async() => {
         try {
@@ -56,23 +22,23 @@ function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, 
                 .update({is_done: !isDone})
                 .eq('id', productID);
 
-            onDelete(); //To refresh items
+            onChecked(productID);
             console.log(data);
         } catch (error) {
             console.error("Error updating from table ",error);
         }
     }
 
-
+    
     return (
         <div className='bg-white p-12 rounded-2xl flex justify-between border border-gray-200'>
             <div className='flex gap-5'>
                 <div id='avatar-circle' className='bg-fuchsia-500 w-10 h-10 rounded-full flex items-center justify-center'>
-                {intial}
+                {addedBy.name[0]}
                 </div>
                 <div className='flex-col'>
                     <h3>{productName}</h3>
-                    <p>Added by: {createdBy.name} : <span id='quantity'>{quantity}</span></p>
+                    <p>Added by: {addedBy.name} : <span id='quantity'>{quantity}</span></p>
                 </div>
             </div>
             {userRole !== 'head' && <div>
@@ -95,6 +61,7 @@ function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, 
             </div>}
         </div>
     )
+
 }
 
 export default ItemCard;

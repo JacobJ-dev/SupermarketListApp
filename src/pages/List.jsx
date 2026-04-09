@@ -8,7 +8,7 @@ function ListPage() {
 
     const navigate = useNavigate();
 
-    const [itemName, setItemName] = useState();
+    const [itemName, setItemName] = useState('');
     const [items, setItems] = useState([]);
     
   
@@ -20,6 +20,7 @@ function ListPage() {
     const[loading, setLoading] = useState(true);
 
     const [member, setMember] = useState(null);
+    const [houseMembers, setHouseMembers] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -65,9 +66,12 @@ function ListPage() {
             //Only one row should be returned, so save the row results for easy access
             setMember(member[0]);
 
+            const {data: householdMembers} = await supabase
+                .from('household_member')
+                .select()
+                .eq('household_id', member[0].household_id);
             
-            
-   
+            setHouseMembers(householdMembers);
 
             //Select all items where household_id matches
             const {data: itemData} = await supabase
@@ -82,6 +86,16 @@ function ListPage() {
         } finally {
             setLoading(false);
         }
+    }
+
+    const updateCheckedItems = (checkedID) => {
+        const newItems = items.map((item) => {
+            if(item.id === checkedID){
+                return { ...item, is_done: !item.is_done}
+            }
+            return item;
+        })
+        setItems(newItems);
     }
 
 
@@ -128,7 +142,7 @@ function ListPage() {
                         <ul className='flex flex-col gap-3'>
                             {items?.map((groceryItem) => (
                                 <li key={groceryItem.id}>
-                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} addedBy={groceryItem.added_by} userRole={member.role} isDone={groceryItem.is_done} onDelete={loadItems}></ItemCard>}
+                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} addedBy={houseMembers.find(m => m.id === groceryItem.added_by)} userRole={member.role} isDone={groceryItem.is_done} onDelete={loadItems} onChecked={updateCheckedItems}></ItemCard>}
                                 </li>
                             ))}
                         </ul>
