@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient';
 import { useState, useEffect } from 'react';
 import  ItemCard  from './components/ItemCard'
-import { use } from 'react';
+
 
 function ListPage() {
 
@@ -11,14 +11,15 @@ function ListPage() {
     const [itemName, setItemName] = useState();
     const [items, setItems] = useState([]);
     
-    const [householdName, setHouseHoldName] = useState('');
+  
 
-    const [householdID, setHouseholdID] = useState(null);
-    const [currentUser, setCurrentUser] = useState(null);
-    const [memberID, setMemberID] = useState(null);
-    const [userRole, setUserRole] = useState(null);
+
+    
+
 
     const[loading, setLoading] = useState(true);
+
+    const [member, setMember] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -41,7 +42,7 @@ function ListPage() {
             try {
                 const {data} = await supabase
                     .from('item')
-                    .insert({name:itemName, household_id:householdID, added_by:memberID, quantity:"1" });
+                    .insert({name:itemName, household_id:member.household_id, added_by:member.id, quantity:"1" });
 
                 console.log('Data inserted successfully:', data);
                 await loadItems();
@@ -55,28 +56,24 @@ function ListPage() {
         try {
             //Get the current user
             const { data: { user } } = await supabase.auth.getUser();
-            setCurrentUser(user);
-            //Select the household where the user matches the member
-            const {data:house} = await supabase
+            //Select the household member where the user matches the member
+            const {data:member} = await supabase
                 .from('household_member')
-                .select('household_id, id, role')
+                .select('*, household(name)')
                 .eq('user_id',user.id);
+            
+            //Only one row should be returned, so save the row results for easy access
+            setMember(member[0]);
 
-            const { data: household} = await supabase
-                .from('household')
-                .select('name')
-                .eq('id', house[0].household_id);
             
             
-            setHouseHoldName(household[0].name);
-            setHouseholdID(house[0].household_id);
-            setMemberID(house[0].id);
-            setUserRole(house[0].role);
+   
+
             //Select all items where household_id matches
             const {data: itemData} = await supabase
                 .from('item')
                 .select()
-                .eq('household_id',house[0].household_id)
+                .eq('household_id',member[0].household_id)
                 .order('created_at', {ascending:true});
             //Add these into our item
             setItems(itemData);
@@ -100,7 +97,7 @@ function ListPage() {
             <div className='bg-slate-50 rounded-2xl shadow-sm w-full max-w-4xl overflow-hidden'>
                 <div className='bg-green-600 rounded-t-2xl p-8'>
                     <h1 className='text-2xl font-bold tracking-tight text-white'>
-                        Welcome {householdName}!
+                        Welcome {member.household.name}!
                     </h1>
                     <p className='text-sm tracking-wide text-green-200'>
                         Weekly list
@@ -131,7 +128,7 @@ function ListPage() {
                         <ul className='flex flex-col gap-3'>
                             {items?.map((groceryItem) => (
                                 <li key={groceryItem.id}>
-                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} addedBy={groceryItem.added_by} userRole={userRole} isDone={groceryItem.is_done} onDelete={loadItems}></ItemCard>}
+                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} addedBy={groceryItem.added_by} userRole={member.role} isDone={groceryItem.is_done} onDelete={loadItems}></ItemCard>}
                                 </li>
                             ))}
                         </ul>
