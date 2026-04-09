@@ -10,11 +10,15 @@ function ListPage() {
 
     const [itemName, setItemName] = useState();
     const [items, setItems] = useState([]);
+    
+    const [householdName, setHouseHoldName] = useState('');
 
     const [householdID, setHouseholdID] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [memberID, setMemberID] = useState(null);
     const [userRole, setUserRole] = useState(null);
+
+    const[loading, setLoading] = useState(true);
 
     useEffect(() => {
         (async () => {
@@ -58,7 +62,13 @@ function ListPage() {
                 .select('household_id, id, role')
                 .eq('user_id',user.id);
 
+            const { data: household} = await supabase
+                .from('household')
+                .select('name')
+                .eq('id', house[0].household_id);
             
+            
+            setHouseHoldName(household[0].name);
             setHouseholdID(house[0].household_id);
             setMemberID(house[0].id);
             setUserRole(house[0].role);
@@ -72,17 +82,25 @@ function ListPage() {
             setItems(itemData);
         } catch (error){
             console.error('Data failed: ', error);
+        } finally {
+            setLoading(false);
         }
     }
 
 
-
+    if(loading){
+        return (
+            <div className='min-h-screen bg-green-50 flex items-center justify-center'>
+                <p className='text-green-600 font-medium'>Loading...</p>
+            </div>
+        )
+    }
     return (
         <div className='min-h-screen bg-green-50 flex items-center justify-center'>
             <div className='bg-slate-50 rounded-2xl shadow-sm w-full max-w-4xl overflow-hidden'>
                 <div className='bg-green-600 rounded-t-2xl p-8'>
                     <h1 className='text-2xl font-bold tracking-tight text-white'>
-                        Welcome Family!
+                        Welcome {householdName}!
                     </h1>
                     <p className='text-sm tracking-wide text-green-200'>
                         Weekly list
