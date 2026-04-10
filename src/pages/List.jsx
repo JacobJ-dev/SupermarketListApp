@@ -11,7 +11,6 @@ function ListPage() {
     const [itemName, setItemName] = useState('');
     const [items, setItems] = useState([]);
     
-  
 
 
     
@@ -75,7 +74,7 @@ function ListPage() {
             //Select the household member where the user matches the member
             const {data:member} = await supabase
                 .from('household_member')
-                .select('*, household(name)')
+                .select('*, household(name, join_code)')
                 .eq('user_id',user.id);
             
             //Only one row should be returned, so save the row results for easy access
@@ -124,13 +123,22 @@ function ListPage() {
     return (
         <div className='min-h-screen bg-green-50 flex items-center justify-center'>
             <div className='bg-slate-50 rounded-2xl shadow-sm w-full max-w-4xl overflow-hidden'>
-                <div className='bg-green-600 rounded-t-2xl p-8'>
-                    <h1 className='text-2xl font-bold tracking-tight text-white'>
-                        Welcome {member.household.name}!
-                    </h1>
-                    <p className='text-sm tracking-wide text-green-200'>
-                        Weekly list
-                    </p>
+                <div className='bg-green-600 rounded-t-2xl p-8 flex justify-between'>
+                    <div className=''>
+                        <h1 className='text-2xl font-bold tracking-tight text-white'>
+                            Welcome {member.household.name}!
+                        </h1>
+                        
+                        <p className='text-sm tracking-wide text-green-200'>
+                            Weekly list
+                        </p>
+                    </div>
+                    <div className='flex flex-col'>
+                        <p className='mt-auto text-xs tracking-wide text-green-200'>
+                            Household Code: {member.household.join_code}
+                        </p>
+                        
+                    </div>
                 </div>
                 <div className='p-8 flex items-center'>
                     
