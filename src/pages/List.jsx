@@ -22,6 +22,15 @@ function ListPage() {
     const [member, setMember] = useState(null);
     const [houseMembers, setHouseMembers] = useState(null);
 
+    const colours = [
+        'bg-red-400',
+        'bg-blue-400',
+        'bg-purple-400',
+        'bg-amber-400',
+        'bg-pink-400',
+        'bg-teal-400',
+    ]
+
     useEffect(() => {
         (async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -32,6 +41,12 @@ function ListPage() {
             await loadItems();
         })();
     }, []);
+
+    const getMemberColour = (memberID) => {
+        var colourIndex = memberID % 6;
+
+        return colours[colourIndex];
+    }
 
     const updateItem = (event) => {
         setItemName(event.target.value);
@@ -142,7 +157,9 @@ function ListPage() {
                         <ul className='flex flex-col gap-3'>
                             {items?.map((groceryItem) => (
                                 <li key={groceryItem.id}>
-                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} addedBy={houseMembers.find(m => m.id === groceryItem.added_by)} userRole={member.role} isDone={groceryItem.is_done} onDelete={loadItems} onChecked={updateCheckedItems}></ItemCard>}
+                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} iconColour={getMemberColour(groceryItem.added_by)}
+                                    addedBy={houseMembers.find(m => m.id === groceryItem.added_by)} userRole={member.role} isDone={groceryItem.is_done} 
+                                    onDelete={loadItems} onChecked={updateCheckedItems}></ItemCard>}
                                 </li>
                             ))}
                         </ul>

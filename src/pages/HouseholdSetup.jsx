@@ -88,7 +88,7 @@ function HouseholdSetupPage() {
                 await addCurrentUserToHouseHold(house_id, 'member');
             }
 
-            navigate("/home");
+            navigate("/name-setup");
         } catch (error){
 
         }
@@ -126,7 +126,7 @@ function HouseholdSetupPage() {
 
             console.log('Data inserted successfully:', data);
 
-            navigate("/home");
+            navigate("/name-setup");
         } catch (error) {
             
         }

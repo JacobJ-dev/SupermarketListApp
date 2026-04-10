@@ -1,6 +1,6 @@
 import { supabase } from '../../supabaseClient';
 
-function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, onDelete, onChecked}){
+function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, iconColour, onDelete, onChecked}){
 
     const handleDelete = async() => {
         try {
@@ -24,6 +24,7 @@ function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, 
 
             onChecked(productID);
             console.log(data);
+            console.log(iconColour);
         } catch (error) {
             console.error("Error updating from table ",error);
         }
@@ -33,7 +34,7 @@ function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, 
     return (
         <div className='bg-white p-12 rounded-2xl flex justify-between border border-gray-200'>
             <div className='flex gap-5'>
-                <div id='avatar-circle' className='bg-fuchsia-500 w-10 h-10 rounded-full flex items-center justify-center'>
+                <div id='avatar-circle' className={`w-10 h-10 rounded-full flex items-center justify-center ${iconColour}`}>
                 {addedBy.name[0]}
                 </div>
                 <div className='flex-col'>
