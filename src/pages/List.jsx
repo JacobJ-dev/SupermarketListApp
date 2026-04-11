@@ -163,13 +163,21 @@ function ListPage() {
 
                     <div id='item-holder' className='p-6 flex flex-col gap-3'>
                         <ul className='flex flex-col gap-3'>
-                            {items?.map((groceryItem) => (
-                                <li key={groceryItem.id}>
-                                    {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} iconColour={getMemberColour(groceryItem.added_by)}
-                                    addedBy={houseMembers.find(m => m.id === groceryItem.added_by)} userRole={member.role} isDone={groceryItem.is_done} 
-                                    onDelete={loadItems} onChecked={updateCheckedItems}></ItemCard>}
-                                </li>
-                            ))}
+                            {
+                                (items.length === 0) ?
+                                <div className='flex flex-col items-center py-12'>
+                                    <h3 className='text-lg font-bold text-green-600 mb-1'>Your list is empty 🛒</h3>
+                                    <p className='text-sm text-slate-400'>Add your first item above</p>
+                                </div>
+                                :
+                                items?.map((groceryItem) => (
+                                    <li key={groceryItem.id}>
+                                        {<ItemCard productName={groceryItem.name} productID={groceryItem.id} quantity={groceryItem.quantity} iconColour={getMemberColour(groceryItem.added_by)}
+                                        addedBy={houseMembers.find(m => m.id === groceryItem.added_by)} userRole={member.role} isDone={groceryItem.is_done} 
+                                        onDelete={loadItems} onChecked={updateCheckedItems}></ItemCard>}
+                                    </li>
+                                )) 
+                            }
                         </ul>
                     </div>
                 </div>
