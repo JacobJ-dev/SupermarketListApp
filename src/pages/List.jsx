@@ -41,6 +41,19 @@ function ListPage() {
         })();
     }, []);
 
+    useEffect(() => {
+        
+        const channel = supabase
+            .channel('supermarket-items')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'item'}, loadItems)
+            .subscribe();
+
+        return() => {
+            supabase.removeChannel(channel);
+        }
+
+    },[])
+
     const getMemberColour = (memberID) => {
         var colourIndex = memberID % 6;
 
