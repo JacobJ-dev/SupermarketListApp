@@ -30,10 +30,19 @@ function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, 
         }
     }
 
+    const handleQuantityChange = async(increaseValue) => {
+        
+        try {
+            
+        } catch (error) {
+            
+        }
+    }
+
     
     return (
-        <div className='bg-white p-12 rounded-2xl flex justify-between border border-gray-200'>
-            <div className='flex gap-5'>
+        <div className='bg-white p-3 md:p-12 rounded-2xl flex flex-col md:flex-row gap-3 md:gap-0 justify-between border border-gray-200'>
+            <div className='flex md:flex-1 gap-5 items-center'>
                 <div id='avatar-circle' className={`w-10 h-10 rounded-full flex items-center justify-center ${iconColour}`}>
                 {addedBy.name[0]}
                 </div>
@@ -42,24 +51,26 @@ function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, 
                     <p>Added by: {addedBy.name} : <span id='quantity'>{quantity}</span></p>
                 </div>
             </div>
-            {userRole !== 'head' && <div>
-            {isDone ? <div className='bg-red-100 px-5 rounded-2xl flex items-center justify-center'>
-                    <p className='text-red-600'>ordered</p>
-                </div>
-                : <div className='bg-green-100 px-5 rounded-2xl flex items-center justify-center'>
-                    <p className='text-green-600 '>needed</p>
-                </div>}
-                
+                <div className='flex'>
+                {userRole !== 'head' && <div className='flex'>
+                {isDone ? <div className='bg-red-100 px-5 rounded-2xl flex items-center justify-center'>
+                        <p className='text-red-600'>ordered</p>
+                    </div>
+                    : <div className='bg-green-100 px-5 rounded-2xl flex items-center justify-center'>
+                        <p className='text-green-600 '>needed</p>
+                    </div>}
+                    
 
-                
-            </div>}
-            {userRole === 'head' && <div className='flex items-center gap-3'>
-                <input type="checkbox" name="isDone" checked={isDone} onChange={handleIsDone} className='w-9 h-9 rounded-md accent-green-600 cursor-pointer'></input>
-                <button type="button" onClick={handleDelete}  className='w-9 h-9 rounded-md bg-red-600 hover:bg-red-500 focus-visible:outline-2'>
-                    {/* <img src='../src/assets/bin.svg' className='w-9 h-9'></img> */}
-                    <p className='text-white'>X</p>
-                </button>
-            </div>}
+                    
+                </div>}
+                {userRole === 'head' && <div className='flex items-center md:justify-normal justify-end gap-3'>
+                    <input type="checkbox" name="isDone" checked={isDone} onChange={handleIsDone} className='w-9 h-9 rounded-md accent-green-600 cursor-pointer'></input>
+                    <button type="button" onClick={handleDelete}  className='w-9 h-9 rounded-md bg-red-600 hover:bg-red-500 focus-visible:outline-2'>
+                        {/* <img src='../src/assets/bin.svg' className='w-9 h-9'></img> */}
+                        <p className='text-white'>X</p>
+                    </button>
+                </div>}
+            </div>
         </div>
     )
 
