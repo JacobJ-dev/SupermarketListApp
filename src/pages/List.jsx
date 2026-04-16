@@ -73,6 +73,7 @@ function ListPage() {
                     .insert({name:itemName, household_id:member.household_id, added_by:member.id, quantity:"1" });
 
                 console.log('Data inserted successfully:', data);
+                setItemName('');
                 await loadItems();
             } catch (error) {
                 console.log("Error while inserting: ", error);
@@ -162,6 +163,7 @@ function ListPage() {
                             id="item"
                             name='item'
                             placeholder='Add an item..'
+                            value={itemName}
                             onChange={updateItem}
                             required
                             />
