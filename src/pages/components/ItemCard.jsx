@@ -1,4 +1,5 @@
 import { supabase } from '../../supabaseClient';
+import QuantityPicker from './QuantityPicker';
 
 function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, iconColour, onDelete, onChecked}){
 
@@ -30,12 +31,15 @@ function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, 
         }
     }
 
-    const handleQuantityChange = async(increaseValue) => {
+    const handleQuantityChange = async(newValue) => {
         
         try {
-            
+            const {data} = await supabase
+                .from('item')
+                .update({quantity: newValue})
+                .eq('id', productID);
         } catch (error) {
-            
+            console.error("Error updating from table ",error);
         }
     }
 
@@ -48,7 +52,10 @@ function ItemCard({productName, productID, addedBy, quantity, userRole, isDone, 
                 </div>
                 <div className='flex-col'>
                     <h3>{productName}</h3>
-                    <p>Added by: {addedBy.name} : <span id='quantity'>{quantity}</span></p>
+                    <p>Added by: {addedBy.name}</p>
+                    <div className='mt-2'>
+                        <QuantityPicker itemQuantity={quantity} updateQuantity={handleQuantityChange}></QuantityPicker>
+                    </div>
                 </div>
             </div>
                 <div className='flex'>
