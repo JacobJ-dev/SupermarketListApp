@@ -45,7 +45,7 @@ function ListPage() {
         
         const channel = supabase
             .channel('supermarket-items')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'item'}, loadItems)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'item'}, refreshItems)
             .subscribe();
 
         return() => {
@@ -101,18 +101,28 @@ function ListPage() {
             
             setHouseMembers(householdMembers);
 
-            //Select all items where household_id matches
-            const {data: itemData} = await supabase
-                .from('item')
-                .select()
-                .eq('household_id',member[0].household_id)
-                .order('created_at', {ascending:true});
-            //Add these into our item
-            setItems(itemData);
+            refreshItems(member[0]);
         } catch (error){
             console.error('Data failed: ', error);
         } finally {
             setLoading(false);
+        }
+    }
+
+    const refreshItems = async(currMember) => {
+        try {
+
+            //Select all items where household_id matches
+            const {data: itemData} = await supabase
+                .from('item')
+                .select()
+                .eq('household_id',currMember.household_id)
+                .order('created_at', {ascending:true});
+            //Add these into our item
+            setItems(itemData);
+
+        } catch (error){
+
         }
     }
 
