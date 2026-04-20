@@ -45,14 +45,14 @@ function ListPage() {
         
         const channel = supabase
             .channel('supermarket-items')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'item'}, refreshItems)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'item'}, () => refreshItems(member))
             .subscribe();
 
         return() => {
             supabase.removeChannel(channel);
         }
 
-    },[])
+    },[member])
 
     const getMemberColour = (memberID) => {
         var colourIndex = memberID % 6;
@@ -110,6 +110,9 @@ function ListPage() {
     }
 
     const refreshItems = async(currMember) => {
+        if(!currMember){
+            return;
+        }
         try {
 
             //Select all items where household_id matches
